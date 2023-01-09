@@ -33,3 +33,23 @@ it('link two nodes', () => {
     },
   })
 })
+
+describe('static methods', () => {
+  it('link two nodes', () => {
+    const Node = lazyGraph({ Y })
+    const a = new Node('a')
+    const b = new Node('b')
+    Node.add(a, b)
+
+    expect(a.toJSON()).toEqual({
+      id: a.id,
+      data: 'a',
+      links: {
+        [b.id]: {
+          id: b.id,
+          data: 'b',
+        },
+      },
+    })
+  })
+})

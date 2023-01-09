@@ -8,6 +8,7 @@ type YJS = any
 const lazyGraph = ({ Y }: { Y: YJS }) => {
   class Node {
     doc: Doc
+    static add: Doc
 
     constructor(data: T, { id }: { id?: string } = {}) {
       const doc = new Y.Doc()
@@ -33,6 +34,10 @@ const lazyGraph = ({ Y }: { Y: YJS }) => {
       this.doc.getMap().get('links').set(id, node.doc)
     }
 
+    // static add(a: Node, b: Node, type?: string) {
+    //   return a.add(b, type)
+    // }
+
     /** Converts the Node to JSON. */
     public toJSON(doc?: Doc): any {
       doc = doc || this.doc
@@ -52,6 +57,9 @@ const lazyGraph = ({ Y }: { Y: YJS }) => {
       }
     }
   }
+
+  // add static methods
+  Node.add = (a: Node, b: Node, type?: string) => a.add(b, type)
 
   return Node
 }
