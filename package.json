@@ -1,0 +1,26 @@
+{
+  "name": "y-lazy-tree",
+  "description": "",
+  "version": "0.0.0",
+  "author": {
+    "name": "Raine Revere",
+    "email": "raine@cybersemics.org",
+    "url": "https://github.com/raineorshine"
+  },
+  "bugs": "",
+  "engines": {
+    "node": ">=14"
+  },
+  "keywords": [],
+  "homepage": "",
+  "license": "ISC",
+  "repository": "",
+  "type": "module",
+  "peerDependencies": {
+    "prettier": ">= 2.0.0"
+  },
+  "dependencies": {
+    "nanoid": "^4.0.0",
+    "yjs": "^13.5.44"
+  }
+}
