@@ -1,42 +1,54 @@
 import { nanoid } from 'nanoid'
 
-type T = string
 type Doc = any
+type T = string
+type YJS = any
 
-const lazyTree = ({ Y }: { Y: any }) => {
-  const create = ({ doc, id, value }: { doc?: Doc; id?: string; value: T }) => {
-    const thoughtDoc = new Y.Doc()
-    const thought = thoughtDoc.getMap()
-    const idNew = id || nanoid()
-    thought.set('id', idNew)
-    thought.set('value', value)
-    thought.set('children', new Y.Map())
-    return thoughtDoc
+const lazyGraph = ({ Y }: { Y: YJS }) => {
+  class Node {
+    doc: Doc
+
+    constructor(data: T, { id }: { id?: string } = {}) {
+      const doc = new Y.Doc()
+      const thought = doc.getMap()
+      const idNew = id || nanoid()
+      thought.set('id', idNew)
+      thought.set('data', data)
+      thought.set('links', new Y.Map())
+      this.doc = doc
+    }
+
+    /** Link two nodes together. Specify an optional type that can be used to filter links. */
+    public add(node: Node, type?: string) {
+      const id = node.doc.getMap().get('id')
+      this.doc.getMap().get('links').set(id, node.doc)
+    }
+
+    /** Converts the Node to JSON. */
+    public toJSON(doc?: Doc): any {
+      doc = doc || this.doc
+      const links = doc.getMap().get('links')
+      if (!links) return '(buffered)'
+
+      const entries = Array.from(links.entries()) as [string, Doc][]
+      const linkJSON = entries.map(([id, childDoc]) => {
+        const child = childDoc.getMap()
+        return {
+          id,
+          data: child.get('data'),
+          links: this.toJSON(childDoc),
+        }
+      })
+
+      return {
+        id: this.doc.getMap().get('id'),
+        data: this.doc.getMap().get('data'),
+        ...(linkJSON.length > 0 ? { links: linkJSON } : null),
+      }
+    }
   }
 
-  const add = (parentDoc: Doc, { value }: { value: string }) => {
-    const thoughtDoc = create({ value })
-    const id = thoughtDoc.getMap().get('id')
-    parentDoc.getMap().get('children').set(id, thoughtDoc)
-    return thoughtDoc
-  }
-
-  const render = (doc: Doc, { indent }: { indent?: number } = {}) => {
-    let output = ''
-    indent = indent || 0
-    const children = doc.getMap().get('children')
-    if (!children) return `${'  '.repeat(indent)}(pending)`
-
-    children.forEach((childDoc: Doc) => {
-      const child = childDoc.getMap()
-      output += `${'  '.repeat(indent!)}- ${child.get('value')}\n`
-      output += render(childDoc, { indent: indent! + 1 })
-    })
-
-    return output
-  }
-
-  return { create, add, render }
+  return Node
 }
 
-export default lazyTree
+export default lazyGraph
