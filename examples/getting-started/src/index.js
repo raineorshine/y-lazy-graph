@@ -1,9 +1,9 @@
 import * as Y from 'yjs'
-import LazyTree from '../../../index.js'
+import lazyTree from '../../../build/index.js'
 import { WebsocketProvider } from 'y-websocket'
 
 const websocketUrl = 'ws://localhost:1234'
-const tree = LazyTree({ Y })
+const tree = lazyTree({ Y })
 
 const rootDoc = tree.create({ id: 'root', value: 'root' })
 const rootWebsocketProvider = new WebsocketProvider(websocketUrl, 'root', rootDoc)
