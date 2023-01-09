@@ -1,6 +1,6 @@
 {
-  "name": "y-lazy-tree",
-  "description": "",
+  "name": "y-lazy-graph",
+  "description": "An offline-first, lazy-loaded, reactive graph type using yjs subdocuments.",
   "version": "0.0.0",
   "author": {
     "name": "Raine Revere",

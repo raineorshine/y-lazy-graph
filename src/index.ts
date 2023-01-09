@@ -31,7 +31,7 @@ const lazyGraph = ({ Y }: { Y: YJS }) => {
     }
 
     /** Link two nodes together. Specify an optional type that can be used to filter links. */
-    public add(node: Node, type?: string) {
+    public add(node: Node, type?: string): void {
       type = type || ''
       const id = node.doc.getMap().get('id')
       const linksMap = this.doc.getMap().get('links')
