@@ -57,6 +57,11 @@ console.log(a.toJSON())
 
 ## API
 
+- [default export](https://github.com/raineorshine/y-lazy-graph#default-export)
+- [constructor](https://github.com/raineorshine/y-lazy-graph#constructor)
+- [add](https://github.com/raineorshine/y-lazy-graph#add)
+- [delete](https://github.com/raineorshine/y-lazy-graph#delete)
+
 ### default export
 
 The default export is a function that returns the Node constructor. Pass your instance of Y.
@@ -94,7 +99,7 @@ const a = new Node('a')
 Links two nodes together with an edge.
 
 ```ts
-public add(node: Node, type?: string): void
+add(node: Node, type?: string): void
 static add(a: Node, b: Node, type?: string): void
 ```
 
@@ -107,4 +112,12 @@ Example:
 const a = new Node('a')
 const b = new Node('b')
 a.add(b)
+```
+
+### delete
+
+Deletes a node.
+
+```ts
+delete(): void
 ```

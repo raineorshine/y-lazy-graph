@@ -56,7 +56,37 @@ it('add typed link', () => {
   })
 })
 
-describe('static methods', () => {
+it('delete', () => {
+  const Node = lazyGraph({ Y })
+  const a = new Node('a')
+  const b = new Node('b')
+  a.add(b)
+  b.delete()
+
+  expect(b.doc.toJSON()).toEqual({ '': {} })
+
+  expect(a.toJSON()).toEqual({
+    id: a.id,
+    data: 'a',
+  })
+})
+
+it('delete typed link', () => {
+  const Node = lazyGraph({ Y })
+  const a = new Node('a')
+  const b = new Node('b')
+  a.add(b, 'friend')
+  b.delete()
+
+  expect(b.doc.toJSON()).toEqual({ '': {} })
+
+  expect(a.toJSON()).toEqual({
+    id: a.id,
+    data: 'a',
+  })
+})
+
+describe('static aliases', () => {
   it('add', () => {
     const Node = lazyGraph({ Y })
     const a = new Node('a')
@@ -76,6 +106,7 @@ describe('static methods', () => {
       },
     })
   })
+
   it('add typed link', () => {
     const Node = lazyGraph({ Y })
     const a = new Node('a')
