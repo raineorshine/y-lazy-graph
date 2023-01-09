@@ -1,5 +1,5 @@
-import lazyGraph from '../index'
 import * as Y from 'yjs'
+import lazyGraph from '../index'
 
 it('constructor', () => {
   const Node = lazyGraph({ Y })
