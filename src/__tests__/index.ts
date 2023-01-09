@@ -16,7 +16,7 @@ it('toJSON', () => {
   })
 })
 
-it('link two nodes', () => {
+it('add', () => {
   const Node = lazyGraph({ Y })
   const a = new Node('a')
   const b = new Node('b')
@@ -26,16 +26,38 @@ it('link two nodes', () => {
     id: a.id,
     data: 'a',
     links: {
-      [b.id]: {
-        id: b.id,
-        data: 'b',
+      '': {
+        [b.id]: {
+          id: b.id,
+          data: 'b',
+        },
+      },
+    },
+  })
+})
+
+it('add typed link', () => {
+  const Node = lazyGraph({ Y })
+  const a = new Node('a')
+  const b = new Node('b')
+  a.add(b, 'friend')
+
+  expect(a.toJSON()).toEqual({
+    id: a.id,
+    data: 'a',
+    links: {
+      friend: {
+        [b.id]: {
+          id: b.id,
+          data: 'b',
+        },
       },
     },
   })
 })
 
 describe('static methods', () => {
-  it('link two nodes', () => {
+  it('add', () => {
     const Node = lazyGraph({ Y })
     const a = new Node('a')
     const b = new Node('b')
@@ -45,9 +67,30 @@ describe('static methods', () => {
       id: a.id,
       data: 'a',
       links: {
-        [b.id]: {
-          id: b.id,
-          data: 'b',
+        '': {
+          [b.id]: {
+            id: b.id,
+            data: 'b',
+          },
+        },
+      },
+    })
+  })
+  it('add typed link', () => {
+    const Node = lazyGraph({ Y })
+    const a = new Node('a')
+    const b = new Node('b')
+    Node.add(a, b, 'friend')
+
+    expect(a.toJSON()).toEqual({
+      id: a.id,
+      data: 'a',
+      links: {
+        friend: {
+          [b.id]: {
+            id: b.id,
+            data: 'b',
+          },
         },
       },
     })

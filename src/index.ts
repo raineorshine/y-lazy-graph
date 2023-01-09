@@ -20,35 +20,41 @@ const lazyGraph = ({ Y }: { Y: YJS }) => {
       this.doc = doc
     }
 
+    /** Gets the id from the Node Doc. */
     public get id() {
       return this.doc.getMap().get('id')
     }
 
+    /** Gets the data from the Node Doc. */
     public get data() {
       return this.doc.getMap().get('data')
     }
 
     /** Link two nodes together. Specify an optional type that can be used to filter links. */
     public add(node: Node, type?: string) {
+      type = type || ''
       const id = node.doc.getMap().get('id')
-      this.doc.getMap().get('links').set(id, node.doc)
-    }
+      const linksMap = this.doc.getMap().get('links')
+      if (!linksMap.has(type)) {
+        linksMap.set(type, new Y.Map())
+      }
 
-    // static add(a: Node, b: Node, type?: string) {
-    //   return a.add(b, type)
-    // }
+      linksMap.get(type).set(id, node.doc)
+    }
 
     /** Converts the Node to JSON. */
     public toJSON(doc?: Doc): any {
       doc = doc || this.doc
-      const links = doc.getMap().get('links')
-      const linkDocs = links.toJSON() as { [key: string]: Doc }
-      const linkJSON = keyValueBy(linkDocs, (id, childDoc) => {
-        const child = childDoc.getMap()
-        return {
-          [id]: this.toJSON(childDoc),
-        }
-      })
+      const linksMap = doc.getMap().get('links')
+      const linkDocs = linksMap.toJSON() as { [key: string]: { [key: string]: Doc } }
+      const linkJSON = keyValueBy(linkDocs, (type, linkTypeMap) => ({
+        [type]: keyValueBy(linkTypeMap, (id, childDoc) => {
+          const child = childDoc.getMap()
+          return {
+            [id]: this.toJSON(childDoc),
+          }
+        }),
+      }))
 
       return {
         id: doc.getMap().get('id'),
