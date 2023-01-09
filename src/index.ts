@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid'
+import keyValueBy from './lib/keyValueBy'
 
 type Doc = any
 type T = string
@@ -18,6 +19,14 @@ const lazyGraph = ({ Y }: { Y: YJS }) => {
       this.doc = doc
     }
 
+    public get id() {
+      return this.doc.getMap().get('id')
+    }
+
+    public get data() {
+      return this.doc.getMap().get('data')
+    }
+
     /** Link two nodes together. Specify an optional type that can be used to filter links. */
     public add(node: Node, type?: string) {
       const id = node.doc.getMap().get('id')
@@ -28,22 +37,18 @@ const lazyGraph = ({ Y }: { Y: YJS }) => {
     public toJSON(doc?: Doc): any {
       doc = doc || this.doc
       const links = doc.getMap().get('links')
-      if (!links) return '(buffered)'
-
-      const entries = Array.from(links.entries()) as [string, Doc][]
-      const linkJSON = entries.map(([id, childDoc]) => {
+      const linkDocs = links.toJSON() as { [key: string]: Doc }
+      const linkJSON = keyValueBy(linkDocs, (id, childDoc) => {
         const child = childDoc.getMap()
         return {
-          id,
-          data: child.get('data'),
-          links: this.toJSON(childDoc),
+          [id]: this.toJSON(childDoc),
         }
       })
 
       return {
-        id: this.doc.getMap().get('id'),
-        data: this.doc.getMap().get('data'),
-        ...(linkJSON.length > 0 ? { links: linkJSON } : null),
+        id: doc.getMap().get('id'),
+        data: doc.getMap().get('data'),
+        ...(Object.keys(linkJSON).length > 0 ? { links: linkJSON } : null),
       }
     }
   }
