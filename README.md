@@ -130,7 +130,10 @@ Gets all linked Nodes.
 get(type?: string): void
 ```
 
-- `type?: string` - Gets only nodes with the given type (O(1)).
+- `type?: string | null` - Gets linked nodes (O(1)).
+  - If no type is given, returns untyped nodes (default).
+  - If a type is given, returns only linked nodes of the given type (still O(1)).
+  - If null is given, returns all nodes regardless of type. It is recommended to only pass null if you have mixed node types.
 
 Example:
 

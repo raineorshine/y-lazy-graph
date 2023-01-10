@@ -250,6 +250,75 @@ it('get typed links and ignore untyped nodes', () => {
   ])
 })
 
+it('get all links', () => {
+  const a = new Node('a')
+  const b = new Node('b')
+  const c = new Node('c')
+  a.add(b)
+  a.add(c, 'red')
+
+  const linkedNodes = a.get(null)
+
+  expect(linkedNodes.map(node => node.toJSON())).toEqual([
+    {
+      id: b.id,
+      data: 'b',
+      links: {
+        '': {
+          [a.id]: {
+            id: a.id,
+            data: 'a',
+            links: {
+              '': {
+                [b.id]: Cycle,
+              },
+              red: {
+                [c.id]: {
+                  id: c.id,
+                  data: 'c',
+                  links: {
+                    red: {
+                      [a.id]: Cycle,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    {
+      id: c.id,
+      data: 'c',
+      links: {
+        red: {
+          [a.id]: {
+            id: a.id,
+            data: 'a',
+            links: {
+              '': {
+                [b.id]: {
+                  id: b.id,
+                  data: 'b',
+                  links: {
+                    '': {
+                      [a.id]: Cycle,
+                    },
+                  },
+                },
+              },
+              red: {
+                [c.id]: Cycle,
+              },
+            },
+          },
+        },
+      },
+    },
+  ])
+})
+
 describe('static aliases', () => {
   it('add child', () => {
     const a = new Node('a')

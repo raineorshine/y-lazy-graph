@@ -80,11 +80,16 @@ const lazyGraph = ({ Y }: { Y: YJS }) => {
     }
 
     /** Gets all linked Nodes with the specified type. */
-    public get(type?: string): Node[] {
-      type = type || ''
+    public get(type?: string | null): Node[] {
+      if (type === undefined) {
+        type = ''
+      }
       const linksTypeMap = this.doc.getMap().get('links') as { [key: string]: Doc }
-      const linksMap = linksTypeMap.get(type)
-      return Array.from(linksMap.values()).map(doc => new Node(doc))
+      const docs =
+        type === null
+          ? Array.from(linksTypeMap.values()).flatMap((linksMap: any) => Array.from(linksMap.values()))
+          : Array.from(linksTypeMap.get(type).values())
+      return docs.map(doc => new Node(doc))
     }
 
     /** Converts the Node to JSON. */
