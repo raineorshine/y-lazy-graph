@@ -5,18 +5,25 @@ type Doc = any
 type T = string
 type YJS = any
 
+export const Cycle = Symbol('Cycle')
+
 const lazyGraph = ({ Y }: { Y: YJS }) => {
   class Node {
     doc: Doc
     static add: Doc
 
-    constructor(data: T, { id }: { id?: string } = {}) {
-      const doc = new Y.Doc()
-      const thought = doc.getMap()
-      const idNew = id || nanoid()
-      thought.set('id', idNew)
-      thought.set('data', data)
-      thought.set('links', new Y.Map())
+    constructor(data: T | Doc, { id }: { id?: string } = {}) {
+      const clone = data instanceof Y.Doc
+      const doc = clone ? data : new Y.Doc()
+
+      if (!clone) {
+        const thought = doc.getMap()
+        const idNew = id || nanoid()
+        thought.set('id', idNew)
+        thought.set('data', data)
+        thought.set('links', new Y.Map())
+      }
+
       this.doc = doc
     }
 
@@ -72,6 +79,14 @@ const lazyGraph = ({ Y }: { Y: YJS }) => {
       this.doc.destroy()
     }
 
+    /** Gets all linked Nodes with the specified type. */
+    public get(type?: string): Node[] {
+      type = type || ''
+      const linksTypeMap = this.doc.getMap().get('links') as { [key: string]: Doc }
+      const linksMap = linksTypeMap.get(type)
+      return Array.from(linksMap.values()).map(doc => new Node(doc))
+    }
+
     /** Converts the Node to JSON. */
     public toJSON({
       doc,
@@ -93,7 +108,10 @@ const lazyGraph = ({ Y }: { Y: YJS }) => {
         const linkTypeMaps = keyValueBy(linkTypeMap, (childId, childDoc) => {
           const child = childDoc.getMap()
           // do not recur if node has already been traversed
-          if (traversed?.has(childId)) return null
+          if (traversed?.has(childId))
+            return {
+              [childId]: Cycle,
+            }
 
           return {
             [childId]: this.toJSON({ doc: childDoc, traversed }),

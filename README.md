@@ -82,11 +82,11 @@ const Node = lazyGraph({ Y })
 A nestable graph node that contains a Y.Doc for syncing across clients.
 
 ```ts
-constructor(data: T, options: { id?: string })
+constructor(data: T | Y.Doc, options: { id?: string })
 ```
 
-- `data: T` - Your custom data that is attached to the node.
-- `options.id: string` - Set the id. Defaults to a nanoid.
+- `data: T | Doc` - Your custom data that is attached to the node. You can also pass the Y.Doc of another Node to clone it, i.e. create a new Node instance that wraps the Doc without creating any additional data.
+- `options.id: string` - Set the id. Defaults to a new, globally unique identifier (nanoid).
 
 Example:
 
@@ -120,4 +120,31 @@ Deletes a node.
 
 ```ts
 delete(): void
+```
+
+### get
+
+Gets all linked Nodes.
+
+```ts
+get(type?: string): void
+```
+
+- `type?: string` - Gets only nodes with the given type (O(1)).
+
+Example:
+
+```js
+const a = new Node('a')
+const b = new Node('b')
+const c = new Node('c')
+a.add(b)
+a.add(c)
+const linkedNodes = a.get()
+/*
+[
+  { id: B_ID, data: 'b' },
+  { id: C_ID, data: 'c' },
+]
+*/
 ```

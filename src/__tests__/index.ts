@@ -1,5 +1,5 @@
 import * as Y from 'yjs'
-import lazyGraph from '../index'
+import lazyGraph, { Cycle } from '../index'
 
 const Node = lazyGraph({ Y })
 
@@ -29,6 +29,11 @@ it('add child', () => {
         [b.id]: {
           id: b.id,
           data: 'b',
+          links: {
+            '': {
+              [a.id]: Cycle,
+            },
+          },
         },
       },
     },
@@ -50,10 +55,20 @@ it('add siblings', () => {
         [b.id]: {
           id: b.id,
           data: 'b',
+          links: {
+            '': {
+              [a.id]: Cycle,
+            },
+          },
         },
         [c.id]: {
           id: c.id,
           data: 'c',
+          links: {
+            '': {
+              [a.id]: Cycle,
+            },
+          },
         },
       },
     },
@@ -73,6 +88,11 @@ it('add typed link', () => {
         [b.id]: {
           id: b.id,
           data: 'b',
+          links: {
+            friend: {
+              [a.id]: Cycle,
+            },
+          },
         },
       },
     },
@@ -107,6 +127,129 @@ it('delete typed link', () => {
   })
 })
 
+it('get untyped links and ignore typed links', () => {
+  const a = new Node('a')
+  const b = new Node('b')
+  const c = new Node('c')
+  a.add(b)
+  a.add(c, 'red')
+
+  const linkedNodes = a.get()
+
+  expect(linkedNodes.map(node => node.toJSON())).toEqual([
+    {
+      id: b.id,
+      data: 'b',
+      links: {
+        '': {
+          [a.id]: {
+            id: a.id,
+            data: 'a',
+            links: {
+              '': {
+                [b.id]: Cycle,
+              },
+              red: {
+                [c.id]: {
+                  id: c.id,
+                  data: 'c',
+                  links: {
+                    red: {
+                      [a.id]: Cycle,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  ])
+})
+
+it('get typed links and ignore other types', () => {
+  const a = new Node('a')
+  const b = new Node('b')
+  const c = new Node('c')
+  a.add(b, 'red')
+  a.add(c, 'green')
+
+  const linkedNodes = a.get('red')
+
+  expect(linkedNodes.map(node => node.toJSON())).toEqual([
+    {
+      id: b.id,
+      data: 'b',
+      links: {
+        red: {
+          [a.id]: {
+            id: a.id,
+            data: 'a',
+            links: {
+              red: {
+                [b.id]: Cycle,
+              },
+              green: {
+                [c.id]: {
+                  id: c.id,
+                  data: 'c',
+                  links: {
+                    green: {
+                      [a.id]: Cycle,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  ])
+})
+
+it('get typed links and ignore untyped nodes', () => {
+  const a = new Node('a')
+  const b = new Node('b')
+  const c = new Node('c')
+  a.add(b, 'red')
+  a.add(c)
+
+  const linkedNodes = a.get('red')
+
+  expect(linkedNodes.map(node => node.toJSON())).toEqual([
+    {
+      id: b.id,
+      data: 'b',
+      links: {
+        red: {
+          [a.id]: {
+            id: a.id,
+            data: 'a',
+            links: {
+              '': {
+                [c.id]: {
+                  id: c.id,
+                  data: 'c',
+                  links: {
+                    '': {
+                      [a.id]: Cycle,
+                    },
+                  },
+                },
+              },
+              red: {
+                [b.id]: Cycle,
+              },
+            },
+          },
+        },
+      },
+    },
+  ])
+})
+
 describe('static aliases', () => {
   it('add child', () => {
     const a = new Node('a')
@@ -121,6 +264,11 @@ describe('static aliases', () => {
           [b.id]: {
             id: b.id,
             data: 'b',
+            links: {
+              '': {
+                [a.id]: Cycle,
+              },
+            },
           },
         },
       },
@@ -140,6 +288,11 @@ describe('static aliases', () => {
           [b.id]: {
             id: b.id,
             data: 'b',
+            links: {
+              friend: {
+                [a.id]: Cycle,
+              },
+            },
           },
         },
       },
