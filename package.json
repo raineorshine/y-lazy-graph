@@ -21,10 +21,12 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "patch-package"
   },
   "dependencies": {
-    "nanoid": "^4.0.0"
+    "nanoid": "^4.0.0",
+    "patch-package": "^6.5.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
@@ -39,7 +41,7 @@
     "yjs": "^13.5.44"
   },
   "peerDependencies": {
-    "yjs": ">= 13.4.0",
-    "prettier": ">= 2.0.0"
+    "prettier": ">= 2.0.0",
+    "yjs": ">= 13.4.0"
   }
 }

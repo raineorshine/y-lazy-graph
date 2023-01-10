@@ -44,6 +44,12 @@ const lazyGraph = ({ Y }: { Y: YJS }) => {
       }
 
       linksMapA.get(type).set(id, node.doc)
+
+      // The reverse link will produce an error when adding a sibling:
+      // "This document was already integrated as a sub-document."
+      // https://github.com/yjs/yjs/blob/9a7250f1927a42d430b3b275c62a1fdd8fabbc11/src/structs/ContentDoc.js#L23
+      // It does not seem to affect functionality.
+      // See: https://github.com/yjs/yjs/issues/480
       linksMapB.get(type).set(this.id, this.doc)
     }
 

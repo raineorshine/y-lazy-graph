@@ -1,4 +1,4 @@
 {
-  "testPathIgnorePatterns": ["build"],
+  "testPathIgnorePatterns": ["/build", "/node_modules/"],
   "transformIgnorePatterns": ["node_modules/(?!@nanoid)/"]
 }

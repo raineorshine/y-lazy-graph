@@ -1,13 +1,13 @@
 import * as Y from 'yjs'
 import lazyGraph from '../index'
 
+const Node = lazyGraph({ Y })
+
 it('constructor', () => {
-  const Node = lazyGraph({ Y })
   const a = new Node('a')
 })
 
 it('toJSON', () => {
-  const Node = lazyGraph({ Y })
   const a = new Node('a')
 
   expect(a.toJSON()).toEqual({
@@ -16,8 +16,7 @@ it('toJSON', () => {
   })
 })
 
-it('add', () => {
-  const Node = lazyGraph({ Y })
+it('add child', () => {
   const a = new Node('a')
   const b = new Node('b')
   a.add(b)
@@ -36,8 +35,32 @@ it('add', () => {
   })
 })
 
+it('add siblings', () => {
+  const a = new Node('a')
+  const b = new Node('b')
+  const c = new Node('c')
+  a.add(b)
+  a.add(c)
+
+  expect(a.toJSON()).toEqual({
+    id: a.id,
+    data: 'a',
+    links: {
+      '': {
+        [b.id]: {
+          id: b.id,
+          data: 'b',
+        },
+        [c.id]: {
+          id: c.id,
+          data: 'c',
+        },
+      },
+    },
+  })
+})
+
 it('add typed link', () => {
-  const Node = lazyGraph({ Y })
   const a = new Node('a')
   const b = new Node('b')
   a.add(b, 'friend')
@@ -57,7 +80,6 @@ it('add typed link', () => {
 })
 
 it('delete', () => {
-  const Node = lazyGraph({ Y })
   const a = new Node('a')
   const b = new Node('b')
   a.add(b)
@@ -72,7 +94,6 @@ it('delete', () => {
 })
 
 it('delete typed link', () => {
-  const Node = lazyGraph({ Y })
   const a = new Node('a')
   const b = new Node('b')
   a.add(b, 'friend')
@@ -87,8 +108,7 @@ it('delete typed link', () => {
 })
 
 describe('static aliases', () => {
-  it('add', () => {
-    const Node = lazyGraph({ Y })
+  it('add child', () => {
     const a = new Node('a')
     const b = new Node('b')
     Node.add(a, b)
@@ -108,7 +128,6 @@ describe('static aliases', () => {
   })
 
   it('add typed link', () => {
-    const Node = lazyGraph({ Y })
     const a = new Node('a')
     const b = new Node('b')
     Node.add(a, b, 'friend')

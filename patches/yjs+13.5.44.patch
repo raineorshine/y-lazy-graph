@@ -1,0 +1,14 @@
+diff --git a/node_modules/yjs/dist/yjs.cjs b/node_modules/yjs/dist/yjs.cjs
+index 1cd4270..4ba92f9 100644
+--- a/node_modules/yjs/dist/yjs.cjs
++++ b/node_modules/yjs/dist/yjs.cjs
+@@ -8239,9 +8239,6 @@ class ContentDoc {
+    * @param {Doc} doc
+    */
+   constructor (doc) {
+-    if (doc._item) {
+-      console.error('This document was already integrated as a sub-document. You should create a second instance instead with the same guid.');
+-    }
+     /**
+      * @type {Doc}
+      */
