@@ -1,5 +1,5 @@
 import * as Y from 'yjs'
-import lazyGraph, { Cycle } from '../index'
+import lazyGraph from '../index'
 
 const Node = lazyGraph({ Y })
 
@@ -31,7 +31,42 @@ it('add child', () => {
           data: 'b',
           links: {
             '': {
-              [a.id]: Cycle,
+              [a.id]: { cycle: 'a' },
+            },
+          },
+        },
+      },
+    },
+  })
+})
+
+it('add grandchild', () => {
+  const a = new Node('a')
+  const b = new Node('b')
+  const c = new Node('c')
+  a.add(b)
+  b.add(c)
+
+  expect(a.toJSON()).toEqual({
+    id: a.id,
+    data: 'a',
+    links: {
+      '': {
+        [b.id]: {
+          id: b.id,
+          data: 'b',
+          links: {
+            '': {
+              [a.id]: { cycle: 'a' },
+              [c.id]: {
+                id: c.id,
+                data: 'c',
+                links: {
+                  '': {
+                    [b.id]: { cycle: 'b' },
+                  },
+                },
+              },
             },
           },
         },
@@ -57,7 +92,7 @@ it('add siblings', () => {
           data: 'b',
           links: {
             '': {
-              [a.id]: Cycle,
+              [a.id]: { cycle: 'a' },
             },
           },
         },
@@ -66,7 +101,7 @@ it('add siblings', () => {
           data: 'c',
           links: {
             '': {
-              [a.id]: Cycle,
+              [a.id]: { cycle: 'a' },
             },
           },
         },
@@ -90,7 +125,7 @@ it('add typed link', () => {
           data: 'b',
           links: {
             friend: {
-              [a.id]: Cycle,
+              [a.id]: { cycle: 'a' },
             },
           },
         },
@@ -99,10 +134,11 @@ it('add typed link', () => {
   })
 })
 
-it('delete', () => {
+it('delete child', () => {
   const a = new Node('a')
   const b = new Node('b')
   a.add(b)
+
   b.delete()
 
   expect(b.doc.toJSON()).toEqual({ '': {} })
@@ -117,6 +153,7 @@ it('delete typed link', () => {
   const a = new Node('a')
   const b = new Node('b')
   a.add(b, 'friend')
+
   b.delete()
 
   expect(b.doc.toJSON()).toEqual({ '': {} })
@@ -125,47 +162,6 @@ it('delete typed link', () => {
     id: a.id,
     data: 'a',
   })
-})
-
-it('get untyped links and ignore typed links', () => {
-  const a = new Node('a')
-  const b = new Node('b')
-  const c = new Node('c')
-  a.add(b)
-  a.add(c, 'red')
-
-  const linkedNodes = a.get()
-
-  expect(linkedNodes.map(node => node.toJSON())).toEqual([
-    {
-      id: b.id,
-      data: 'b',
-      links: {
-        '': {
-          [a.id]: {
-            id: a.id,
-            data: 'a',
-            links: {
-              '': {
-                [b.id]: Cycle,
-              },
-              red: {
-                [c.id]: {
-                  id: c.id,
-                  data: 'c',
-                  links: {
-                    red: {
-                      [a.id]: Cycle,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  ])
 })
 
 it('get typed links and ignore other types', () => {
@@ -188,7 +184,7 @@ it('get typed links and ignore other types', () => {
             data: 'a',
             links: {
               red: {
-                [b.id]: Cycle,
+                [b.id]: { cycle: 'b' },
               },
               green: {
                 [c.id]: {
@@ -196,7 +192,7 @@ it('get typed links and ignore other types', () => {
                   data: 'c',
                   links: {
                     green: {
-                      [a.id]: Cycle,
+                      [a.id]: { cycle: 'a' },
                     },
                   },
                 },
@@ -234,13 +230,13 @@ it('get typed links and ignore untyped nodes', () => {
                   data: 'c',
                   links: {
                     '': {
-                      [a.id]: Cycle,
+                      [a.id]: { cycle: 'a' },
                     },
                   },
                 },
               },
               red: {
-                [b.id]: Cycle,
+                [b.id]: { cycle: 'b' },
               },
             },
           },
@@ -270,7 +266,7 @@ it('get all links', () => {
             data: 'a',
             links: {
               '': {
-                [b.id]: Cycle,
+                [b.id]: { cycle: 'b' },
               },
               red: {
                 [c.id]: {
@@ -278,7 +274,7 @@ it('get all links', () => {
                   data: 'c',
                   links: {
                     red: {
-                      [a.id]: Cycle,
+                      [a.id]: { cycle: 'a' },
                     },
                   },
                 },
@@ -303,13 +299,13 @@ it('get all links', () => {
                   data: 'b',
                   links: {
                     '': {
-                      [a.id]: Cycle,
+                      [a.id]: { cycle: 'a' },
                     },
                   },
                 },
               },
               red: {
-                [c.id]: Cycle,
+                [c.id]: { cycle: 'c' },
               },
             },
           },
@@ -335,7 +331,7 @@ describe('static aliases', () => {
             data: 'b',
             links: {
               '': {
-                [a.id]: Cycle,
+                [a.id]: { cycle: 'a' },
               },
             },
           },
@@ -359,7 +355,7 @@ describe('static aliases', () => {
             data: 'b',
             links: {
               friend: {
-                [a.id]: Cycle,
+                [a.id]: { cycle: 'a' },
               },
             },
           },

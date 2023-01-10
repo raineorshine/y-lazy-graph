@@ -5,8 +5,6 @@ type Doc = any
 type T = string
 type YJS = any
 
-export const Cycle = Symbol('Cycle')
-
 const lazyGraph = ({ Y }: { Y: YJS }) => {
   class Node {
     doc: Doc
@@ -70,8 +68,8 @@ const lazyGraph = ({ Y }: { Y: YJS }) => {
       // delete this node from all Docs' links
       linkedDocs.forEach((doc: Doc) => {
         const reverseLinkTypeMap = doc.getMap().get('links')
-        reverseLinkTypeMap.forEach((linksMap: any, type: string) => {
-          linksMap.delete(this.id)
+        reverseLinkTypeMap.forEach((reverseLinksMap: any, type: string) => {
+          reverseLinksMap.delete(this.id)
         })
       })
 
@@ -115,7 +113,7 @@ const lazyGraph = ({ Y }: { Y: YJS }) => {
           // do not recur if node has already been traversed
           if (traversed?.has(childId))
             return {
-              [childId]: Cycle,
+              [childId]: { cycle: child.get('data') },
             }
 
           return {
