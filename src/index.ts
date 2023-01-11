@@ -38,7 +38,6 @@ const lazyGraph = ({ Y }: { Y: YJS }) => {
     /** Link two nodes together. Specify an optional type that can be used to filter links. */
     public add(node: Node, type?: string): void {
       type = type || ''
-      const id = node.doc.getMap().get('id')
       const linksMapA = this.doc.getMap().get('links')
       const linksMapB = node.doc.getMap().get('links')
       if (!linksMapA.has(type)) {
@@ -48,12 +47,12 @@ const lazyGraph = ({ Y }: { Y: YJS }) => {
         linksMapB.set(type, new Y.Map())
       }
 
-      linksMapA.get(type).set(id, node.doc)
+      linksMapA.get(type).set(node.id, node.doc)
 
       // The reverse link will produce an error when adding a sibling:
       // "This document was already integrated as a sub-document."
       // https://github.com/yjs/yjs/blob/9a7250f1927a42d430b3b275c62a1fdd8fabbc11/src/structs/ContentDoc.js#L23
-      // It does not seem to affect functionality.
+      // It does not seem to affect functionality. Temporary fix in /patches.
       // See: https://github.com/yjs/yjs/issues/480
       linksMapB.get(type).set(this.id, this.doc)
     }
@@ -69,6 +68,8 @@ const lazyGraph = ({ Y }: { Y: YJS }) => {
       linkedDocs.forEach((doc: Doc) => {
         const reverseLinkTypeMap = doc.getMap().get('links')
         reverseLinkTypeMap.forEach((reverseLinksMap: any, type: string) => {
+          // Normally causes an infinite loop due to the invalid circular JSON structure of subdocument cycles.
+          // Temporary fix in /patches.
           reverseLinksMap.delete(this.id)
         })
       })

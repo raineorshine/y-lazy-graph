@@ -1,8 +1,22 @@
 diff --git a/node_modules/yjs/dist/yjs.cjs b/node_modules/yjs/dist/yjs.cjs
-index 1cd4270..4ba92f9 100644
+index 1cd4270..793c80e 100644
 --- a/node_modules/yjs/dist/yjs.cjs
 +++ b/node_modules/yjs/dist/yjs.cjs
-@@ -8239,9 +8239,6 @@ class ContentDoc {
+@@ -623,7 +623,11 @@ class Doc extends observable.Observable {
+    * Emit `destroy` event and unregister all event handlers.
+    */
+   destroy () {
+-    array__namespace.from(this.subdocs).forEach(subdoc => subdoc.destroy());
++    // prevent cycles
++    this.destroyed = true
++    array__namespace.from(this.subdocs).forEach(subdoc => {
++    if(subdoc.destroyed) return
++      subdoc.destroy()
++    });
+     const item = this._item;
+     if (item !== null) {
+       this._item = null;
+@@ -8239,9 +8243,6 @@ class ContentDoc {
     * @param {Doc} doc
     */
    constructor (doc) {
