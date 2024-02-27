@@ -1,3 +1,5 @@
+# DEPRECATED: The basic graph structure is set up with tests. Feel free to use. Cycles likely don't work, but it may be possible with a custom subdocument implementation. I decided to take a different approach in my own project.
+
 # y-lazy-graph
 
 An offline-first, lazy-loaded, reactive graph type using yjs subdocuments.
@@ -5,8 +7,6 @@ An offline-first, lazy-loaded, reactive graph type using yjs subdocuments.
 - [x] Two-way edges
 - [ ] Cycles
 - [ ] Provider support
-
-## ALPHA STATUS!!!: The basic graph structure is set up with tests. Cycles likely don't work, but it may be possible with a custom subdocument implementation. I decided to take a different approach in my own project, but open an issue if you're interested in using this. I can add initial Provider support upon request.
 
 ## Install
 
